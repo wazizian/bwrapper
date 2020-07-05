@@ -1,6 +1,8 @@
 # bwrapper
 A wrapper to use the Bitwarden CLI as a git credential helper
 
+(This project is not associated in any way with [Bitwarden](https://bitwarden.com/).)
+
 ## Requirements:
 - Bitwarden CLI
 - Python>=3.5
