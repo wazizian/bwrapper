@@ -25,7 +25,12 @@ process = subprocess.run(['bw', 'get', 'item', base_domain],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
 #TODO: check stderr
-bw_item = json.loads(process.stdout)
+
+try:
+    bw_item = json.loads(process.stdout)
+except json.decoder.JSONDecodeError:
+    #TODO: maybe ask the user to unlock their vault
+    exit(0)
 
 for attr in OUT_ATTRIBUTES:
     try:
