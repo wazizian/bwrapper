@@ -4,6 +4,15 @@ import sys
 import subprocess
 import json
 
+def check_bw_status():
+    process = subprocess.run(['bw', 'status'], stdout=subprocess.PIPE)
+    try:
+        bw_status = json.loads(process.stdout)
+    except json.decoder.JSONDecodeError:
+        print("Warning: no valid bw CLI found", file=sys.stderr)
+    if bw_status['status'] != 'unlocked':
+        print("Warning: cannot access vault, your vault is {}".format(bw_status['status']), file=sys.stderr)
+
 OUT_ATTRIBUTES = ['username', 'password']
 
 if sys.argv[1] != 'get':
@@ -29,7 +38,7 @@ process = subprocess.run(['bw', 'get', 'item', base_domain],
 try:
     bw_item = json.loads(process.stdout)
 except json.decoder.JSONDecodeError:
-    #TODO: maybe ask the user to unlock their vault
+    check_bw_status()
     exit(0)
 
 for attr in OUT_ATTRIBUTES:
