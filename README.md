@@ -18,6 +18,11 @@ To enable this heper globally, replace `local` by `global`.
 
 If you are curious, you can enable debugging output by replacing `'/absolute/path/git-credential-bwrapper.py'` by `'/absolute/path/git-credential-bwrapper.py --debug'.`
 
+Finally, make the script executable by running,
+```
+chmod +x /absolute/path/git-credential-bwrapper.py
+```
+
 ## Usage
 If it is the first time you use the Bitwarden CLI, you have to login using `bw login`, see [the official documentation](https://bitwarden.com/help/article/cli/).
 
