@@ -39,6 +39,24 @@ def output_out_attributes(bw_item):
         except KeyError:
             exit(0)
 
+def get_git_config_email():
+    command = ['git', 'config', 'user.email']
+    process = subprocess.run(command,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+    return process.stdout.decode('utf-8').rstrip()
+
+def select_item(bw_items, base_domain):
+    email = get_git_config_email()
+    logging.debug("git config user.email: {}".format(email))
+    for bw_item in bw_items:
+        username = bw_item['login']['username']
+        logging.debug("bw item with username: {}".format(username))
+        if email == username:
+            return bw_item
+    print("Warning: several items for {} but no items matching {} the email in git config".format(base_domain, email), file=sys.stderr)
+    exit(0)
+
 info = {}
 for line in sys.stdin:
     line = line.rstrip()
@@ -72,10 +90,11 @@ except json.decoder.JSONDecodeError:
     exit(0)
 
 if len(bw_items) == 0:
-    print("Warning: no items for base domain {} in vault".format(base_domain))
+    print("Warning: no items for base domain {} in vault".format(base_domain), file=sys.stderr)
 elif len(bw_items) == 1:
     output_out_attributes(bw_items[0])
 else:
-    assert False
+    bw_item = select_item(bw_items, base_domain)
+    output_out_attributes(bw_item)
 
 
