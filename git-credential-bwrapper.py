@@ -32,6 +32,13 @@ def check_bw_status():
 
 OUT_ATTRIBUTES = ['username', 'password']
 
+def output_out_attributes(bw_item):
+    for attr in OUT_ATTRIBUTES:
+        try:
+            print(attr + '=' + bw_item['login'][attr])
+        except KeyError:
+            exit(0)
+
 info = {}
 for line in sys.stdin:
     line = line.rstrip()
@@ -45,7 +52,7 @@ logging.debug("Received information from git:\n\t{}".format(info))
 #TODO: check protocol
 
 base_domain = info['host'].split('.')[-2]
-command = ['bw', 'get', 'item', base_domain]
+command = ['bw', 'list', 'items', '--search', base_domain]
 
 logging.debug("Bitwarden query: {}".format(' '.join(command)))
 
@@ -59,14 +66,16 @@ logging.debug("Bitwarden output:\n\tstdout: {}\n\tstderr: {}".format(process.std
 #TODO: check stderr
 
 try:
-    bw_item = json.loads(process.stdout)
+    bw_items = json.loads(process.stdout)
 except json.decoder.JSONDecodeError:
     check_bw_status()
     exit(0)
 
-for attr in OUT_ATTRIBUTES:
-    try:
-        print(attr + '=' + bw_item['login'][attr])
-    except KeyError:
-        exit(0)
+if len(bw_items) == 0:
+    print("Warning: no items for base domain {} in vault".format(base_domain))
+elif len(bw_items) == 1:
+    output_out_attributes(bw_items[0])
+else:
+    assert False
+
 
